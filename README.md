@@ -1,0 +1,2 @@
+# pyfavicon
+Async favicon fetcher
