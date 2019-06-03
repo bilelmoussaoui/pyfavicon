@@ -1,0 +1,13 @@
+sudo: false
+language: python
+dist: xenial
+matrix:
+  include:
+    - python: 3.7
+      env: TOXENV=py37
+    - python: 3.7
+      env: TOXENV=check
+install:
+  - pip install -r requirements.txt
+  - pip install tox-travis
+script: tox
