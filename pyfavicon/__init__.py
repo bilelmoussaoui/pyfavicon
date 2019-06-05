@@ -105,8 +105,8 @@ class Icon:
             else:
                 buffer = b''
                 async with aiohttp.ClientSession() as session:
-                    response = await send_request(self.link, session,
-                                                  headers=Favicon.HEADERS)
+                    response = await session.get(self.link,
+                                                 headers=Favicon.HEADERS)
                     async for chunck in response.content.iter_chunked(1024):
                         if not chunck:
                             break
@@ -121,16 +121,27 @@ class Icon:
 
     @staticmethod
     def new_from_tag(link_tag: bs4.element.Tag, url: yarl.URL):
-        fav_url = yarl.URL(link_tag.attrs['href'])
-        if fav_url.scheme != 'data':
-            if fav_url.is_absolute() and url:
-                fav_url = fav_url.with_host(
-                    fav_url.host).with_scheme(url.scheme)
-            elif url:
-                fav_url = yarl.URL.build(scheme=url.scheme, host=url.host,
-                                         path=fav_url.path)
+        parsed_url = urllib.parse.urlparse(link_tag.attrs['href'])
+        print(parsed_url)
+        if parsed_url.scheme != 'data':
+            fav_url = None
+            # Missing scheme
+            if not parsed_url.netloc and parsed_url.path.startswith(':'):
+                fav_url = yarl.URL(url.scheme + parsed_url.path)
+            # Absolute path
+            elif not parsed_url.netloc:
+                fav_url = yarl.URL.build(host=url.host,
+                                         scheme=url.scheme,
+                                         path=parsed_url.path)
+            # Link look fine
+            elif parsed_url.netloc:
+                fav_url = yarl.URL.build(scheme=parsed_url.scheme,
+                                         host=parsed_url.netloc,
+                                         path=parsed_url.path)
+            # Data scheme:
+            print(fav_url)
             return Icon(link=fav_url, website_url=url)
-        elif fav_url.scheme == 'data':
+        else:
             return Icon(data=link_tag.attrs['href'], website_url=url)
 
     @property
@@ -148,8 +159,8 @@ class Icon:
                 fd.write(self.data)
         else:
             async with aiohttp.ClientSession() as session:
-                response = await send_request(self.link, session,
-                                              headers=Favicon.HEADERS)
+                response = await session.get(self.link,
+                                             headers=Favicon.HEADERS)
                 with open(self.path, 'wb') as fd:
                     async for chunck in response.content.iter_chunked(128):
                         if not chunck:
@@ -161,7 +172,7 @@ class Icon:
 
     def __generate_icon_name(self, website_url: yarl.URL) -> str:
         # If we don't have a base64 data image.
-        from tempfile import NamedTemporaryFile, tempdir
+        from tempfile import NamedTemporaryFile, gettempdir
         if website_url:
             image_name = website_url.host
         else:
@@ -174,7 +185,7 @@ class Icon:
         if Favicon.DOWNLOAD_DIR:
             self._path = Favicon.DOWNLOAD_DIR.joinpath(image_name)
         else:
-            self._path = os.path.join(tempdir, image_name)
+            self._path = os.path.join(gettempdir(), image_name)
 
 
 class IconsList:
@@ -236,14 +247,15 @@ class Favicon:
             return favicons
         return IconsList()
 
-    async def from_html(self, html_content: str) -> IconsList:
-        favicons = await self.__find_favicons_links(html_content)
+    async def from_html(self, html_content: str, website_url: yarl.URL = None) -> IconsList:
+        favicons = await self.__find_favicons_links(html_content,
+                                                    website_url)
         return favicons
 
-    async def from_file(self, html_file: pathlib.Path) -> IconsList:
+    async def from_file(self, html_file: pathlib.Path, website_url: yarl.URL = None) -> IconsList:
         with html_file.open() as f:
             html_content = f.read()
-        favicons = await self.from_html(html_content)
+        favicons = await self.from_html(html_content, website_url)
         return favicons
 
     async def __find_favicons_links(self, html_content: str,

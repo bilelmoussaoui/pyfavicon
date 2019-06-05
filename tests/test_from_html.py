@@ -2,6 +2,7 @@ import unittest
 import asyncio
 from pyfavicon import Favicon, FaviconType
 from pathlib import Path
+from yarl import URL
 
 
 class HTMLTest(unittest.TestCase):
@@ -20,7 +21,8 @@ class HTMLTest(unittest.TestCase):
 
         async def run_test():
             for html_file in files:
-                favicons = await self.favicon.from_file(html_file)
+                favicons = await self.favicon.from_file(html_file,
+                                                        website_url=URL('https://github.com'))
                 icon = favicons[0]
 
                 self.assertEqual(icon.type, FaviconType.URL)
