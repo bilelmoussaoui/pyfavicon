@@ -1,6 +1,7 @@
 sudo: false
 language: python
 dist: xenial
+cache: docs
 matrix:
   include:
     - python: 3.7
@@ -18,7 +19,7 @@ after_success:
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: docs/html/pyfavicon
+  local_dir: docs/html/pyfavicon/
   github_token: $GH_REPO_TOKEN
   on:
     branch: master
