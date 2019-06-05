@@ -21,4 +21,4 @@ deploy:
   local_dir: docs/html/pyfavicon
   github_token: $GH_REPO_TOKEN
   on:
-    - master
+    branch: master
