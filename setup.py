@@ -29,6 +29,7 @@ setuptools.setup(
     ],
     tests_require=[
         'pytest',
+        'coveralls',
         'python-coveralls',
         'pytest-cov'
     ],
