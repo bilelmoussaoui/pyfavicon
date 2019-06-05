@@ -13,12 +13,10 @@ install:
 script: tox
 after_success: 
   - coveralls
-  - pdoc pyfavicon --html
+  - pdoc pyfavicon --html -o ./docs
 
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: html/pyfavicon
+  local_dir: docs/html/pyfavicon
   github_token: $GH_REPO_TOKEN
-  on:
-    branch: master
