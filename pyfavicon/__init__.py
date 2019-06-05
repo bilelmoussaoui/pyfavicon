@@ -13,7 +13,7 @@ from enum import Enum
 import urllib
 from PIL import ImageFile
 
-__all__ = ['Favicon', 'FaviconType']
+__all__ = ['Favicon', 'FaviconType', 'Icon', 'Icons']
 
 
 LINK_RELS = [
