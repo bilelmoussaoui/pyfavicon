@@ -19,6 +19,7 @@ GITLAB_FAVICONS = {
     'https://about.gitlab.com/ico/apple-touch-icon-76x76.png': (76, 76),
     'https://about.gitlab.com/ico/apple-touch-icon-152x152.png': (152, 152),
     'https://about.gitlab.com/ico/apple-touch-icon-180x180.png': (180, 180),
+    'https://about.gitlab.com/ico/mstile-144x144.png': (144, 144)
 }
 
 
