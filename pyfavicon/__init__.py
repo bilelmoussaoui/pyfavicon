@@ -65,7 +65,7 @@ class Icon:
 
     Attributes:
         size (int, int) : The dimensions of the favicon
-        
+
         extension (str) : The icon extension, .png, .ico...
 
         type (FaviconType) : Whether the icon scheme is of type data or not.
