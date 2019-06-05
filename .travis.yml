@@ -9,5 +9,6 @@ matrix:
       env: TOXENV=check
 install:
   - pip install -r requirements.txt
-  - pip install tox-travis
+  - pip install tox-travis coveralls
 script: tox
+after_success: coveralls

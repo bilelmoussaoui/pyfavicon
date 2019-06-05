@@ -1,13 +1,13 @@
 # pyfavicon
 
 [![Build Status](https://travis-ci.org/bilelmoussaoui/pyfavicon.svg)](https://travis-ci.org/bilelmoussaoui/pyfavicon)
+[![Coverage Status](https://coveralls.io/repos/github/bilelmoussaoui/pyfavicon/badge.svg)](https://coveralls.io/github/bilelmoussaoui/pyfavicon)
 
 Async favicon fetcher
 
 
 ### Requirements
 - `Python 3.7`
-
 - `aiohttp`
 - `beautifulsoup4`
 - `Pillow`
