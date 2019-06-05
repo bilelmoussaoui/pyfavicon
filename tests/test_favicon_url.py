@@ -1,14 +1,17 @@
 import unittest
 import asyncio
 from pyfavicon import Favicon
-from yarl import URL
 
 CASES = [
     ('<link rel="icon" href="/icon.png">', 'https://gitlab.com/icon.png'),
     ('<link rel="icon" href="://gitlab.com/icon.png">',
      'https://gitlab.com/icon.png'),
     ('<link rel="shortcut icon" type="image/png" href="/uploads/-/system/appearance/favicon/1/GnomeLogoVertical.svg.png">',
-    'https://gitlab.com/uploads/-/system/appearance/favicon/1/GnomeLogoVertical.svg.png')
+     'https://gitlab.com/uploads/-/system/appearance/favicon/1/GnomeLogoVertical.svg.png'),
+    ('<link rel="shortcut icon" href="images/favicon.png">', 'https://gitlab.com/images/favicon.png'),
+    ('<link rel="icon" href="/Areas/FirstTech.Web/Assets/images/apple-touch-icon-144x144.png">',
+     'https://gitlab.com/Areas/FirstTech.Web/Assets/images/apple-touch-icon-144x144.png'),
+    ('<link rel="shortcut icon" href="favicon.ico" />', 'https://gitlab.com/favicon.ico')
 ]
 
 
@@ -21,7 +24,7 @@ class TestFaviconUrl(unittest.TestCase):
             favicon = Favicon()
             for html_content, expected_result in CASES:
                 icons = await favicon.from_html(html_content,
-                                                website_url=URL("https://gitlab.com"))
+                                                "https://gitlab.com")
                 self.assertEqual(str(icons[0].link), expected_result)
         asyncio.run(run_tests())
 
