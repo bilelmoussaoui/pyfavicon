@@ -65,9 +65,13 @@ class Icon:
 
     Attributes:
         size (int, int) : The dimensions of the favicon
+        
         extension (str) : The icon extension, .png, .ico...
+
         type (FaviconType) : Whether the icon scheme is of type data or not.
+
         link (yarl.URL) : The favicon URL
+
         data (bytes) : The favicon image content
     '''
 
@@ -91,6 +95,7 @@ class Icon:
 
         Args:
             source (str) : The source tag content;
+
             url (yarl.URL) : The website URL
 
         Returns:
@@ -266,6 +271,7 @@ class Favicon:
 
     Args:
             download_dir (pathlib.Path) : The location to save the icons on
+
             headers (dict) : The headers to send with each request
     '''
     DOWNLOAD_DIR = None
@@ -299,6 +305,7 @@ class Favicon:
 
         Args:
             html_content (str) : The HTML content.
+
             website_url (str) : The website url, the source of the HTML file
 
         Returns:
@@ -314,6 +321,7 @@ class Favicon:
 
         Args:
             html_file (pathlib.Path) : The HTML file path.
+
             website_url (str) : The website url, the source of the HTML file
 
         Returns:
@@ -330,6 +338,7 @@ class Favicon:
 
         Args:
             html_content (str) : The HTML content.
+
             url (yarl.URL) : The website url, the source of the HTML content
 
         Returns:
