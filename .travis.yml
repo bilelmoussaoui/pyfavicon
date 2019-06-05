@@ -9,7 +9,7 @@ matrix:
       env: TOXENV=check
 install:
   - pip install -r requirements.txt
-  - pip install tox-travis coveralls pdoc
+  - pip install tox-travis coveralls pdoc3
 script: tox
 after_success: 
   - coveralls
@@ -20,3 +20,5 @@ deploy:
   skip_cleanup: true
   local_dir: docs/html/pyfavicon
   github_token: $GH_REPO_TOKEN
+  on:
+    - master
