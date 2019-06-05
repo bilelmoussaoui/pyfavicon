@@ -13,7 +13,7 @@ install:
 script: tox
 after_success: 
   - coveralls
-  - pdoc ./pyfavicon --html
+  - pdoc pyfavicon --html
 
 deploy:
   provider: pages
