@@ -4,7 +4,7 @@ from pyfavicon import Favicon
 
 
 GITLAB_FAVICONS = {
-    'https://about.gitlab.com/ico/favicon.ico': (32, 32),
+    'https://about.gitlab.com/ico/favicon.ico': (-1, -1),
     'https://about.gitlab.com/ico/favicon-192x192.png': (190, 175),
     'https://about.gitlab.com/ico/favicon-160x160.png': (158, 145),
     'https://about.gitlab.com/ico/favicon-96x96.png': (95, 87),
@@ -30,8 +30,11 @@ class HTMLTest(unittest.TestCase):
 
     def test_icon_sizes(self):
         async def run_test():
-            favicons = await self.favicon.from_url('https://gitlab.com')
-            for icon in favicons:
-                icon_size = await icon.size
-                self.assertEqual(GITLAB_FAVICONS[str(icon.link)], icon_size)
+            icons = await self.favicon.from_url('https://gitlab.com')
+            for icon in icons:
+                self.assertEqual(GITLAB_FAVICONS[str(icon.link)], icon.size)
+
+            largest = icons.get_largest(extension='png')
+            self.assertEqual(largest.size, (190, 175))
+            self.assertEqual(largest.extension, 'png')
         asyncio.run(run_test())

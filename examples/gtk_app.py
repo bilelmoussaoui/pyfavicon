@@ -55,7 +55,7 @@ class Window(Gtk.Window):
         async def set_largest_image(*args):
             favicon = Favicon(download_dir=Path('.'))
             icons = await favicon.from_url(website)
-            largest = await icons.get_largest()
+            largest = icons.get_largest()
             assert largest
             await largest.save()
             image.set_from_file(str(largest.path))

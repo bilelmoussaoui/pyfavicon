@@ -3,9 +3,9 @@ import asyncio
 from pyfavicon import Favicon
 
 CASES = [
-    ('<link rel="icon" href="/icon.png">', 'https://gitlab.com/icon.png'),
-    ('<link rel="icon" href="://gitlab.com/icon.png">',
-     'https://gitlab.com/icon.png'),
+    ('<link rel="icon" href="/favicon.ico">', 'https://gitlab.com/favicon.ico'),
+    ('<link rel="icon" href="://gitlab.com/favicon.ico">',
+     'https://gitlab.com/favicon.ico'),
     ('<link rel="shortcut icon" type="image/png" href="/uploads/-/system/appearance/favicon/1/GnomeLogoVertical.svg.png">',
      'https://gitlab.com/uploads/-/system/appearance/favicon/1/GnomeLogoVertical.svg.png'),
     ('<link rel="shortcut icon" href="images/favicon.png">', 'https://gitlab.com/images/favicon.png'),
