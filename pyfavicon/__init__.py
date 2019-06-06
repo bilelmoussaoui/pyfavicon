@@ -33,17 +33,6 @@ TAGS = [
 ]
 
 
-async def a_max(liste, attr):
-    max_elem = liste[0]
-    max_val = await getattr(max_elem, attr)
-    for elem in liste:
-        val = await getattr(elem, attr)
-        if val > max_val:
-            max_val = val
-            max_elem = elem
-    return max_elem
-
-
 def parse_base64_icon(data: str) -> bytes:
     if data:
         _, data = data.split(":")
@@ -78,18 +67,15 @@ class Icon:
     def __init__(self, **kwargs):
         self.link = kwargs.get("link")
         self._size = None
-        self.extension = kwargs.get("extension")
+        self._extension = None
         # If the icon of type FaviconType.DATA
         self.data = parse_base64_icon(kwargs.get("data"))
         self._path = None
 
         self.type = FaviconType.DATA if self.data else FaviconType.URL
 
-        # self._parse_extension()
-        self._generate_icon_name(kwargs.get('website_url'))
-
     @staticmethod
-    def new(source: str, url: yarl.URL):
+    async def new(source: str, url: yarl.URL):
         '''
         Create a new Icon from the source tag content.
 
@@ -122,41 +108,23 @@ class Icon:
                 fav_url = fav_url.with_scheme(parsed_url.scheme)
             else:
                 fav_url = fav_url.with_scheme(url.scheme)
-            return Icon(link=fav_url, website_url=url)
+            icon = Icon(link=fav_url, website_url=url)
         else:  # Data scheme:
-            return Icon(data=source, website_url=url)
+            icon = Icon(data=source, website_url=url)
+        await icon.parse(url)
+        return icon
 
     @property
-    async def size(self):
-        image = None
-        if self._size:
-            return self._size
-        image_content = b''
-        if os.path.exists(self.path):
-            with open(self.path, 'rb') as fp:
-                image_content = fp.read()
-        else:
-            if self.type is FaviconType.DATA:
-                image_content = self.data
-            else:
-                async with aiohttp.ClientSession() as session:
-                    response = await session.get(self.link,
-                                                 headers=Favicon.HEADERS)
-                    async for chunck in response.content.iter_chunked(1024):
-                        if not chunck:
-                            break
-                        image_content += chunck
-
-        with ImageFile.Parser() as image_parser:
-            image_parser.feed(image_content)
-            image = image_parser.image
-            if image:
-                self._size = image.size
+    def size(self) -> (int, int):
         return self._size
 
     @property
     def path(self) -> str:
         return self._path
+
+    @property
+    def extension(self) -> str:
+        return self._extension
 
     def __str__(self):
         return str(self.link)
@@ -166,28 +134,48 @@ class Icon:
 
         You can retrieve the favicon cached path using the path property.
         '''
-        if os.path.exists(self._path):
+        if os.path.exists(self.path):
             return
 
-        file_content = b''
+        buffer = b''
         if self.type is FaviconType.DATA:
-            file_content = self.data
+            buffer = self.data
         else:
             async with aiohttp.ClientSession() as session:
                 response = await session.get(self.link,
                                              headers=Favicon.HEADERS)
-                async for chunck in response.content.iter_chunked(128):
-                    if not chunck:
-                        break
-                    file_content += chunck
-
-        assert file_content
-
+                async for chunck, _ in response.content.iter_chunks():
+                    buffer += chunck
         with open(self.path, 'wb') as fd:
-            fd.write(file_content)
+            fd.write(buffer)
 
-    def _parse_extension(self):
-        pass
+    async def parse(self, website_url: yarl.URL):
+        try:
+            with ImageFile.Parser() as image_parser:
+
+                if self.type is FaviconType.DATA:
+                    image_parser.feed(self.data)
+                else:
+
+                    async with aiohttp.ClientSession() as session:
+
+                        response = await session.get(self.link,
+                                                     headers=Favicon.HEADERS)
+
+                        async for chunk in response.content.iter_chunked(1024):
+                            image_parser.feed(chunk)
+                            if image_parser.image:
+                                break
+        except OSError:
+            # PIL failed to decode the image
+            pass
+        # If PIL successfully decoded the image
+        if image_parser and image_parser.image:
+            self._size = image_parser.image.size
+            self._extension = image_parser.image.format.lower()
+        else:
+            self._size = (-1, -1)
+        self._generate_icon_name(website_url)
 
     def _generate_icon_name(self, website_url: yarl.URL) -> str:
         '''
@@ -206,7 +194,7 @@ class Icon:
         else:
             image_name = os.path.basename(NamedTemporaryFile().name)
         if self._size:
-            image_name += '_{}x{}'.format(self._size, self._size)
+            image_name += '_{}x{}'.format(*self._size)
 
         if self.type is not FaviconType.DATA:
             image_name += os.path.basename(self.link.path)
@@ -226,7 +214,7 @@ class Icons:
         self._data = []
         self._current = 0
 
-    async def get_largest(self, extension: str = None) -> Icon:
+    def get_largest(self, extension: str = None) -> Icon:
         '''Get the largest icon
 
         Args:
@@ -240,7 +228,7 @@ class Icons:
             icons = list(filter(lambda icon: icon.extension == extension,
                                 icons))
         if icons:
-            largest = await a_max(icons, 'size')
+            largest = max(icons, key=lambda icon: icon.size)
             return largest
         return None
 
@@ -353,7 +341,7 @@ class Favicon:
         for tag in TAGS:
             sources = bsoup.find_all(tag['name'], attrs=tag['attrs'])
             for elem in sources:
-                icon = Icon.new(elem.attrs[tag['attr']], url=url)
+                icon = await Icon.new(elem.attrs[tag['attr']], url=url)
                 if icon.link not in _added:
                     icons.append(icon)
                     _added.append(icon.link)

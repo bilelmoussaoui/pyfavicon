@@ -33,12 +33,12 @@ async def download_favicon():
     # icons = await avicon_manager.from_html('<link rel="icon" href="favicon.png">')
     for icon in icons:
         # We use PIL to get the exact size of images.
-        icon_size = await icon.size
         print("Favicon from : {}".format(icon.link))
         print("Favicon export name : {}".format(icon.path))
-        print("Favicon size : {}".format(icon_size))
+        print("Favicon size : {}".format(icon.size))
+        print("Favicon format: {}".format(icon.extension))
     # Select the largest icon
-    largest_icon = await icons.get_largest()
+    largest_icon = icons.get_largest()
     await largest_icon.save()
 
 asyncio.run(download_favicon())

@@ -48,9 +48,8 @@ class HTMLTest(unittest.TestCase):
         async def run_tests():
             icons = await self.favicon.from_file(html_file)
 
-            largest_icon = await icons.get_largest()
-            size = await largest_icon.size
-            self.assertTupleEqual(size, (188, 188))
+            largest_icon = icons.get_largest()
+            self.assertTupleEqual(largest_icon.size, (188, 188))
 
         asyncio.run(run_tests())
 

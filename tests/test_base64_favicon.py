@@ -22,6 +22,8 @@ class HTMLTest(unittest.TestCase):
                 icon = favicons[0]
                 self.assertEqual(icon.type, FaviconType.DATA)
                 # Ensure that save works correctly
+                self.assertTupleEqual(icon.size, (16, 16))
+                self.assertEqual(icon.extension, 'ico')
                 await icon.save()
                 self.assertTrue(icon.path.exists())
                 # Compare file content
