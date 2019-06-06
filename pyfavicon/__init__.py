@@ -12,6 +12,7 @@ import pathlib
 from enum import Enum
 import urllib
 from PIL import ImageFile
+import re
 
 __all__ = ['Favicon', 'FaviconType', 'Icon', 'Icons']
 
@@ -95,11 +96,14 @@ class Icon:
                 if parsed_url.path.startswith(':'):
                     fav_url = yarl.URL(url.scheme + parsed_url.path)
                 else:
-                    p = '/' + \
-                        parsed_url.path.lstrip(
-                            '../').lstrip('../').lstrip('./').lstrip('/')
+                    favicon_path = parsed_url.path
+                    match_results = re.match(r'^([\/\.\/\:]+)(.+)$', favicon_path)
+                    if match_results and len(match_results.groups()) == 2:
+                        favicon_path = '/' + match_results.group(2)
+                    else:
+                        favicon_path = '/' + favicon_path
                     fav_url = yarl.URL.build(host=url.host,
-                                             path=p)
+                                             path=favicon_path)
             # Link look fine
             elif parsed_url.netloc:
                 fav_url = yarl.URL.build(host=parsed_url.netloc,
