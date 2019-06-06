@@ -1,7 +1,7 @@
 # pyfavicon
 
-[![Build Status](https://travis-ci.org/bilelmoussaoui/pyfavicon.svg)](https://travis-ci.org/bilelmoussaoui/pyfavicon)
-[![Coverage Status](https://coveralls.io/repos/github/bilelmoussaoui/pyfavicon/badge.svg)](https://coveralls.io/github/bilelmoussaoui/pyfavicon)
+[![Build Status](https://travis-ci.org/bilelmoussaoui/pyfavicon.svg?branch=master)](https://travis-ci.org/bilelmoussaoui/pyfavicon)
+[![Coverage Status](https://coveralls.io/repos/github/bilelmoussaoui/pyfavicon/badge.svg?branch=master)](https://coveralls.io/github/bilelmoussaoui/pyfavicon)
 [![https://pypi.org/project/pyfavicon/](https://img.shields.io/pypi/v/pyfavicon.svg)](https://pypi.org/project/pyfavicon/)
 [![https://pypi.org/project/pyfavicon/](https://img.shields.io/pypi/pyversions/pyfavicon.svg)](https://pypi.org/project/pyfavicon/)
 [![https://bilelmoussaoui.github.io/pyfavicon/](https://img.shields.io/badge/-docs-blue.svg)](https://bilelmoussaoui.github.io/pyfavicon/)
