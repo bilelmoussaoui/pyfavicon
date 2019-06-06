@@ -1,28 +1,16 @@
-import unittest
-import asyncio
 from pyfavicon import Favicon
 from pathlib import Path
 import tempfile
-import yarl
+import pytest
+
+favicon = Favicon(download_dir=Path(tempfile.gettempdir()))
 
 
-class HTMLTest(unittest.TestCase):
+@pytest.mark.asyncio
+async def test_icon_download():
+    icons = await favicon.from_url('https://gitlab.com')
+    for icon in icons:
+        await icon.save()
+        assert icon.path.exists()
 
-    def setUp(self):
-        self.favicon = Favicon(download_dir=Path(tempfile.gettempdir()))
-
-    def test_url_icon_link_type(self):
-
-        async def run_test():
-            icons = await self.favicon.from_url(yarl.URL('https://gitlab.com'))
-            icon = icons[0]
-            # Ensure that save works correctly
-            await icon.save()
-            self.assertTrue(icon.path.exists())
-            # Remove the test file
-            icon.path.unlink()
-        asyncio.run(run_test())
-
-
-if __name__ == '__main__':
-    unittest.main()
+        icon.path.unlink()
