@@ -1,6 +1,5 @@
-import unittest
-import asyncio
 from pyfavicon import Favicon
+import pytest
 
 CASES = [
     ('<link rel="icon" href="/favicon.ico">', 'https://gitlab.com/favicon.ico'),
@@ -14,20 +13,15 @@ CASES = [
     ('<link rel="shortcut icon" href="favicon.ico" />', 'https://gitlab.com/favicon.ico')
 ]
 
-
-class TestFaviconUrl(unittest.TestCase):
-    def setUp(self):
-        self.favicon = Favicon()
-
-    def test_favicon_url(self):
-        async def run_tests():
-            favicon = Favicon()
-            for html_content, expected_result in CASES:
-                icons = await favicon.from_html(html_content,
-                                                "https://gitlab.com")
-                self.assertEqual(str(icons[0].link), expected_result)
-        asyncio.run(run_tests())
+favicon = Favicon()
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.asyncio
+async def test_favicon_url():
+    for html_content, expected_result in CASES:
+        icons = await favicon.from_html(html_content,
+                                        "https://gitlab.com")
+
+        assert len(icons) != 0
+        assert str(icons[0].link) == expected_result
+

@@ -30,7 +30,8 @@ setuptools.setup(
     tests_require=[
         'pytest',
         'coveralls',
-        'pytest-cov'
+        'pytest-cov',
+        'pytest-asyncio'
     ],
     test_suite='tests',
 )

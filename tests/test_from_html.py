@@ -1,58 +1,51 @@
-import unittest
-import asyncio
 from pyfavicon import Favicon, FaviconType
 from pathlib import Path
+import pytest
+
+favicon = Favicon()
 
 
-class HTMLTest(unittest.TestCase):
+@pytest.mark.asyncio
+async def test_link_tag():
+    files = [
+        Path('./tests/html/url_icon_link.html'),
+        Path('./tests/html/url_shortcut_icon_link.html'),
+        Path('./tests/html/url_apple_touch_icon_precomposed_link.html'),
+        Path('./tests/html/url_apple_touch_icon_link.html'),
+        Path('./tests/html/url_fluid_icon_link.html'),
+    ]
 
-    def setUp(self):
-        self.favicon = Favicon()
-
-    def test_url_icon_link_type(self):
-        files = [
-            Path('./tests/html/url_icon_link.html'),
-            Path('./tests/html/url_shortcut_icon_link.html'),
-            Path('./tests/html/url_apple_touch_icon_precomposed_link.html'),
-            Path('./tests/html/url_apple_touch_icon_link.html'),
-            Path('./tests/html/url_fluid_icon_link.html'),
-        ]
-
-        async def run_test():
-            for html_file in files:
-                favicons = await self.favicon.from_file(html_file,
-                                                        'https://github.com')
-                icon = favicons[0]
-
-                self.assertEqual(icon.type, FaviconType.URL)
-                self.assertEqual(str(icon.link),
-                                 'https://github.githubassets.com/favicon.ico')
-        asyncio.run(run_test())
-
-    def test_meta_link(self):
-        html_file = Path('./tests/html/meta_favicon.html')
-
-        async def run_test():
-            icons = await self.favicon.from_file(html_file,
-                                                 'https://gitlab.com')
-            icon = icons[0]
-
-            self.assertEqual(icon.type, FaviconType.URL)
-            self.assertEqual(str(icon.link),
-                             'https://assets.gitlab-static.net/assets/msapplication-tile-1196ec67452f618d39cdd85e2e3a542f76574c071051ae7effbfde01710eb17d.png')
-        asyncio.run(run_test())
-
-    def test_largest_icon(self):
-        html_file = Path('./tests/html/largest_gitlab.html')
-
-        async def run_tests():
-            icons = await self.favicon.from_file(html_file)
-
-            largest_icon = icons.get_largest()
-            self.assertTupleEqual(largest_icon.size, (188, 188))
-
-        asyncio.run(run_tests())
+    for html_file in files:
+        icons = await favicon.from_file(html_file,
+                                                'https://github.com')
+        assert len(icons) != 0
+        icon = icons[0]
+        
+        assert icon.type is FaviconType.URL
+        assert str(icon.link) == 'https://github.githubassets.com/favicon.ico'
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.asyncio
+async def test_meta_tag():
+    html_file = Path('./tests/html/meta_favicon.html')
+
+    icons = await favicon.from_file(html_file, 'https://gitlab.com')
+    assert len(icons) != 0
+
+    icon = icons[0]
+
+    assert icon.type is FaviconType.URL
+    assert str(icon.link) == 'https://assets.gitlab-static.net/assets/msapplication-tile-1196ec67452f618d39cdd85e2e3a542f76574c071051ae7effbfde01710eb17d.png'
+
+
+@pytest.mark.asyncio
+async def test_largest_icon():
+    html_file = Path('./tests/html/largest_gitlab.html')
+
+    icons = await favicon.from_file(html_file)
+    assert len(icons) != 0
+
+    largest_icon = icons.get_largest()
+    assert largest_icon
+
+    assert largest_icon.size == (188, 188)

@@ -123,7 +123,7 @@ class Icon:
         return self._size
 
     @property
-    def path(self) -> str:
+    def path(self) -> pathlib.Path:
         return self._path
 
     @property
@@ -206,7 +206,7 @@ class Icon:
         if Favicon.DOWNLOAD_DIR:
             self._path = Favicon.DOWNLOAD_DIR.joinpath(image_name)
         else:
-            self._path = os.path.join(gettempdir(), image_name)
+            self._path = pathlib.Path(gettempdir()).joinpath(image_name)
 
 
 class Icons:
@@ -241,6 +241,9 @@ class Icons:
 
     def __iter__(self):
         return self
+    
+    def __len__(self):
+        return len(self._data)
 
     def __next__(self):
         if self._current >= len(self._data):

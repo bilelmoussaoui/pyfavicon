@@ -1,7 +1,5 @@
-import unittest
-import asyncio
 from pyfavicon import Favicon
-
+import pytest
 
 GITLAB_FAVICONS = {
     'https://about.gitlab.com/ico/favicon.ico': (-1, -1),
@@ -22,19 +20,17 @@ GITLAB_FAVICONS = {
     'https://about.gitlab.com/ico/mstile-144x144.png': (144, 144)
 }
 
+favicon = Favicon()
 
-class HTMLTest(unittest.TestCase):
 
-    def setUp(self):
-        self.favicon = Favicon()
+@pytest.mark.asyncio
+async def test_icon_size():
+    icons = await favicon.from_url('https://gitlab.com')
+    assert len(icons) != 0
 
-    def test_icon_sizes(self):
-        async def run_test():
-            icons = await self.favicon.from_url('https://gitlab.com')
-            for icon in icons:
-                self.assertEqual(GITLAB_FAVICONS[str(icon.link)], icon.size)
+    for icon in icons:
+        assert GITLAB_FAVICONS[str(icon.link)] == icon.size
 
-            largest = icons.get_largest(extension='png')
-            self.assertEqual(largest.size, (190, 175))
-            self.assertEqual(largest.extension, 'png')
-        asyncio.run(run_test())
+    largest = icons.get_largest(extension='png')
+    assert largest.size == (190, 175)
+    assert largest.extension == 'png'
