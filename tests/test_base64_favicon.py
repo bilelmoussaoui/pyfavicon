@@ -15,19 +15,22 @@ async def test_base64_type():
     icon = favicons[0]
     assert icon.type is FaviconType.DATA
 
+
 @pytest.mark.asyncio
 async def test_base64_size():
     favicons = await favicon.from_file(html_file)
     icon = favicons[0]
-    
+
     assert icon.size == (16, 16)
+
 
 @pytest.mark.asyncio
 async def test_base64_extension():
     favicons = await favicon.from_file(html_file)
     icon = favicons[0]
-    
+
     assert icon.extension == 'ico'
+
 
 @pytest.mark.asyncio
 async def test_base64_save():
@@ -46,4 +49,3 @@ async def test_base64_save():
     # Remove the test file
     temp_file.unlink()
     icon.path.unlink()
-

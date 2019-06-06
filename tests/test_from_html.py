@@ -17,10 +17,10 @@ async def test_link_tag():
 
     for html_file in files:
         icons = await favicon.from_file(html_file,
-                                                'https://github.com')
+                                        'https://github.com')
         assert len(icons) != 0
         icon = icons[0]
-        
+
         assert icon.type is FaviconType.URL
         assert str(icon.link) == 'https://github.githubassets.com/favicon.ico'
 

@@ -24,4 +24,3 @@ async def test_favicon_url():
 
         assert len(icons) != 0
         assert str(icons[0].link) == expected_result
-

@@ -241,7 +241,7 @@ class Icons:
 
     def __iter__(self):
         return self
-    
+
     def __len__(self):
         return len(self._data)
 

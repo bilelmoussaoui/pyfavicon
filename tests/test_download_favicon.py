@@ -12,5 +12,5 @@ async def test_icon_download():
     for icon in icons:
         await icon.save()
         assert icon.path.exists()
-        
+
         icon.path.unlink()
