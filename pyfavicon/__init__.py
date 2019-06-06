@@ -280,13 +280,18 @@ class Favicon:
             Icons
         '''
         # Read the html content of the page async
+        favicons = Icons()
         async with aiohttp.ClientSession() as session:
-            resp = await session.get(url, headers=Favicon.HEADERS)
-            html_content = await resp.text()
+            buffer = b''
+            response = await session.get(url, headers=Favicon.HEADERS)
+            async for chunk in response.content.iter_chunked(1024):
+                if not chunk:
+                    break
+                buffer += chunk
+            html_content = buffer.decode("utf-8")
             favicons = await self._find_favicons_links(html_content,
-                                                       resp.url)
-            return favicons
-        return Icons()
+                                                       response.url)
+        return favicons
 
     async def from_html(self, html_content: str, website_url: str = None) -> Icons:
         '''Fetch all the favicons from an HTML content
