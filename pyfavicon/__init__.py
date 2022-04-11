@@ -148,8 +148,8 @@ class Icon:
             async with aiohttp.ClientSession() as session:
                 response = await session.get(self.link,
                                              headers=Favicon.HEADERS)
-                async for chunck, _ in response.content.iter_chunks():
-                    buffer += chunck
+                async for chunk, _ in response.content.iter_chunks():
+                    buffer += chunk
         with open(self.path, 'wb') as fd:
             fd.write(buffer)
 
